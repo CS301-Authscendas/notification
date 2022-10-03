@@ -1,16 +1,18 @@
 import { NestFactory } from "@nestjs/core";
 import { AppModule } from "./app.module";
 import { MicroserviceOptions, Transport } from "@nestjs/microservices";
+import { ConfigService } from "@nestjs/config";
 
 async function bootstrap() {
     const app = await NestFactory.create(AppModule);
+    const configService = app.get(ConfigService);
 
-    const user = process.env.RABBITMQ_USER;
-    const password = process.env.RABBITMQ_PASSWORD;
-    const host = process.env.RABBITMQ_HOST;
-    const queueName = process.env.RABBITMQ_QUEUE_NAME;
+    const user = configService.get("RABBITMQ_USER");
+    const password = configService.get("RABBITMQ_PASSWORD");
+    const host = configService.get("RABBITMQ_HOST");
+    const queueName = configService.get("RABBITMQ_QUEUE_NAME");
 
-    await app.connectMicroservice<MicroserviceOptions>({
+    await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
         transport: Transport.RMQ,
         options: {
             urls: [`amqp://${user}:${password}@${host}`],
