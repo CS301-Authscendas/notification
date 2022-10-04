@@ -10,12 +10,13 @@ async function bootstrap() {
     const user = configService.get("RABBITMQ_USER");
     const password = configService.get("RABBITMQ_PASSWORD");
     const host = configService.get("RABBITMQ_HOST");
+    const port = configService.get("RABBITMQ_PORT");
     const queueName = configService.get("RABBITMQ_QUEUE_NAME");
 
-    await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
+    const ms = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
         transport: Transport.RMQ,
         options: {
-            urls: [`amqp://${user}:${password}@${host}`],
+            urls: [`amqp://${user}:${password}@${host}:${port}`],
             queue: queueName,
             queueOptions: {
                 durable: true,
@@ -23,6 +24,8 @@ async function bootstrap() {
         },
     });
 
+    // TODO: Figure out why the AMQP microservice is not started without listen().
     app.startAllMicroservices();
+    await ms.listen();
 }
 bootstrap();
