@@ -16,7 +16,7 @@ async function bootstrap() {
     const ms = await NestFactory.createMicroservice<MicroserviceOptions>(AppModule, {
         transport: Transport.RMQ,
         options: {
-            urls: [`amqp://${user}:${password}@${host}:${port}`],
+            urls: [`amqps://${user}:${password}@${host}:${port}`],
             queue: queueName,
             queueOptions: {
                 durable: true,
@@ -24,7 +24,6 @@ async function bootstrap() {
         },
     });
 
-    // TODO: Figure out why the AMQP microservice is not started without listen().
     app.startAllMicroservices();
     await ms.listen();
 }
