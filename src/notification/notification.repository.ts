@@ -1,7 +1,7 @@
 import { Injectable } from "@nestjs/common";
 import * as AWS from "aws-sdk";
 import { DocumentClient } from "aws-sdk/clients/dynamodb";
-import { config } from "src/app.config";
+import { ConfigService } from "@nestjs/config";
 
 @Injectable()
 export class NotificationRepository {
@@ -11,7 +11,12 @@ export class NotificationRepository {
     private notificationPrefix = "NOTIFICATION#";
 
     constructor() {
-        AWS.config.update(config.aws_remote_config);
+        const configService = new ConfigService();
+        AWS.config.update({
+            accessKeyId: configService.get("ACCESS_KEY_ID"),
+            secretAccessKey: configService.get("SECRET_ACCESS_KEY"),
+            region: configService.get("DYNAMO_REGION"),
+        });
         this.tableName = "notification";
         this.db = new AWS.DynamoDB.DocumentClient();
     }
