@@ -1,18 +1,16 @@
-version: "3.7"
-services:
-  rabbitmq:
-    image: rabbitmq:3.9.13-management-alpine
-    container_name: 'rabbitmq'
-    restart: always
-    environment:
-      - "RABBITMQ_DEFAULT_PASS=password1234"
-      - "RABBITMQ_DEFAULT_USER=username"
-    ports:
-      - 15672:15672
-      - 5672:5672
-    networks:
-      - rabbitmq_go_net
+version: "3.8"
 
-networks:
-  rabbitmq_go_net:
-    driver: bridge
+services:
+  api:
+    build:
+      context: .
+      dockerfile: ./Dockerfile
+      target: development
+    volumes:
+      - .:/usr/src/app
+    env_file:
+      - .env
+    ports:
+      - 3000:3000
+    command: npm run start:dev
+    restart: always

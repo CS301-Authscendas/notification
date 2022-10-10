@@ -1,11 +1,10 @@
-import { Attribute } from "@typedorm/common";
-import { IsEmail } from "class-validator";
+import { IsEmail, IsString } from "class-validator";
 
 export class Notification {
-    @Attribute()
     @IsEmail()
+    @IsString()
     userId: string;
 
-    @Attribute()
+    @IsString()
     message: string;
 }
