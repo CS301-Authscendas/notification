@@ -49,10 +49,41 @@ jobs:
         uses: aws-actions/amazon-ecr-login@v1
 
       - name: Build, tag, and push image to Amazon ECR
+        id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
           ECR_REPOSITORY: notification
-          IMAGE_TAG: notification_api_image
+          IMAGE_TAG: latest
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
+          echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
+
+      - name: Download Task Definition
+        run: |
+          aws ecs describe-task-definition --task-definition service \ 
+          --query taskDefinition > task-definition.json
+
+      - name: Fill in new Image ID for Amazon ECS Task Definition
+        id: task-definition
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: notification
+          image: ${{ steps.build-image.outputs.image }}
+
+      - name: Deploy Amazon ECS Task Definition for AZ 1a
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-definition.outputs.task-definition }}
+          service: ${{ format('{0}-1a', secrets.AWS_ECS_SERVICE) }}
+          cluster: ${{ format('{0}-1a', secrets.AWS_CLUSTER) }}
+          wait-for-service-stability: true
+
+      - name: Deploy Amazon ECS Task Definition for AZ 1b
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-definition.outputs.task-definition }}
+          service: ${{ format('{0}-1b', secrets.AWS_ECS_SERVICE) }}
+          cluster: ${{ format('{0}-1b', secrets.AWS_CLUSTER) }}
+          wait-for-service-stability: true
