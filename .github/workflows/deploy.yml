@@ -65,12 +65,12 @@ jobs:
         run: |
           aws ecs describe-task-definition --task-definition $TASK_DEFINITION --query taskDefinition > task-definition.json
 
-      - name: Fill in new Image ID for Amazon ECS Task Definition
+      - name: Fill in new Image ID for Amazon ECS Task Definition in Availability Zone 1a
         id: task-definition
         uses: aws-actions/amazon-ecs-render-task-definition@v1
         with:
           task-definition: task-definition.json
-          container-name: notification
+          container-name: ${{ format('{0}-notifications-1a', secrets.APP_NAME) }}
           image: ${{ steps.build-image.outputs.image }}
 
       - name: Deploy Amazon ECS Task Definition for Availability Zone 1a
