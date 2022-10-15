@@ -63,8 +63,7 @@ jobs:
         env:
           TASK_DEFINITION: ${{ format('{0}-task-notifications-1a', secrets.APP_NAME) }}
         run: |
-          aws ecs describe-task-definition --task-definition $TASK_DEFINITION \ 
-          --query taskDefinition > task-definition.json
+          aws ecs describe-task-definition --task-definition $TASK_DEFINITION --query taskDefinition > task-definition.json
 
       - name: Fill in new Image ID for Amazon ECS Task Definition
         id: task-definition
