@@ -80,3 +80,25 @@ jobs:
           service: ${{ format('{0}-ecs-service-notifications-1a', secrets.APP_NAME) }}
           cluster: ${{ format('{0}-ecs-organizations-1a', secrets.APP_NAME) }}
           wait-for-service-stability: true
+
+      - name: Download Task Definition for Availability Zone 1b
+        env:
+          TASK_DEFINITION: ${{ format('{0}-task-notifications-1b', secrets.APP_NAME) }}
+        run: |
+          aws ecs describe-task-definition --task-definition $TASK_DEFINITION --query taskDefinition > task-definition.json
+
+      - name: Fill in new Image ID for Amazon ECS Task Definition in Availability Zone 1b
+        id: task-definition
+        uses: aws-actions/amazon-ecs-render-task-definition@v1
+        with:
+          task-definition: task-definition.json
+          container-name: ${{ format('{0}-notifications-1b', secrets.APP_NAME) }}
+          image: ${{ steps.build-image.outputs.image }}
+
+      - name: Deploy Amazon ECS Task Definition for Availability Zone 1b
+        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
+        with:
+          task-definition: ${{ steps.task-definition.outputs.task-definition }}
+          service: ${{ format('{0}-ecs-service-notifications-1b', secrets.APP_NAME) }}
+          cluster: ${{ format('{0}-ecs-organizations-1b', secrets.APP_NAME) }}
+          wait-for-service-stability: true
