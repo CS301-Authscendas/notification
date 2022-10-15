@@ -59,9 +59,11 @@ jobs:
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
           echo "::set-output name=image::$ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG"
 
-      - name: Download Task Definition
+      - name: Download Task Definition for Availability Zone 1a
+        env:
+          TASK_DEFINITION: ${{ format('{0}-task-notifications-1a', secrets.APP_NAME) }}
         run: |
-          aws ecs describe-task-definition --task-definition service \ 
+          aws ecs describe-task-definition --task-definition $TASK_DEFINITION \ 
           --query taskDefinition > task-definition.json
 
       - name: Fill in new Image ID for Amazon ECS Task Definition
@@ -72,18 +74,10 @@ jobs:
           container-name: notification
           image: ${{ steps.build-image.outputs.image }}
 
-      - name: Deploy Amazon ECS Task Definition for AZ 1a
+      - name: Deploy Amazon ECS Task Definition for Availability Zone 1a
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
         with:
           task-definition: ${{ steps.task-definition.outputs.task-definition }}
           service: ${{ format('{0}-1a', secrets.AWS_ECS_SERVICE) }}
           cluster: ${{ format('{0}-1a', secrets.AWS_CLUSTER) }}
-          wait-for-service-stability: true
-
-      - name: Deploy Amazon ECS Task Definition for AZ 1b
-        uses: aws-actions/amazon-ecs-deploy-task-definition@v1
-        with:
-          task-definition: ${{ steps.task-definition.outputs.task-definition }}
-          service: ${{ format('{0}-1b', secrets.AWS_ECS_SERVICE) }}
-          cluster: ${{ format('{0}-1b', secrets.AWS_CLUSTER) }}
           wait-for-service-stability: true
