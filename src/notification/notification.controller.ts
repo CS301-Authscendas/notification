@@ -1,16 +1,15 @@
 import { Controller, Get } from "@nestjs/common";
 import { EventPattern } from "@nestjs/microservices";
 import { NotificationService } from "./notification.service";
+import { EmailTemplateType, Notification } from "./notification.entity";
 
 @Controller("notification")
 export class NotificationController {
     constructor(private readonly notificationService: NotificationService) {}
 
-    // TODO: Add in corresponding event name - e.g. @EventPattern(send_email_notification)
-    @EventPattern()
-    async handleSendMessageEvent(data: Record<string, unknown>) {
-        // TODO: Implement handler function.
-        console.log(data);
+    @EventPattern("send_2FA_token_email")
+    sendTwoFaToken(data: Notification) {
+        return this.notificationService.sendMessageEvent(data, EmailTemplateType.TWO_FA);
     }
 
     @Get()

@@ -1,10 +1,19 @@
 import { IsEmail, IsString } from "class-validator";
 
+export enum EmailTemplateType {
+    ACCOUNT_READY = "Account_ready_email_template",
+    REGISTER = "Register_email_template",
+    TWO_FA = "Twofa_email_template",
+}
+
 export class Notification {
     @IsEmail()
     @IsString()
-    userId: string;
+    email: string;
 
     @IsString()
-    message: string;
+    name: string;
+
+    @IsString()
+    code: string;
 }

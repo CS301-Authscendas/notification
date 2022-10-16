@@ -29,6 +29,7 @@
         "@nestjs/platform-express": "^9.0.0",
         "amqp-connection-manager": "^4.1.7",
         "amqplib": "^0.10.3",
+        "aws-sdk": "^2.1233.0",
         "class-validator": "^0.13.2",
         "reflect-metadata": "^0.1.13",
         "rimraf": "^3.0.2",
