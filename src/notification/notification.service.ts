@@ -1,14 +1,13 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { Notification } from "./notification.entity";
+import { EmailTemplateType, Notification } from "./notification.entity";
 
 import AWS = require("aws-sdk");
 AWS.config.update({ region: "us-east-1" });
 
 @Injectable()
 export class NotificationService {
-    async handleSendMessageEvent(data: Notification) {
+    sendMessageEvent(data: Notification, type: EmailTemplateType) {
         Logger.log(data.email);
-        Logger.log(data.type);
         Logger.log(data.name);
         Logger.log(data.code);
 
@@ -17,30 +16,28 @@ export class NotificationService {
                 ToAddresses: [data.email],
             },
             Source: "Authcendas <authcendas@gmail.com>",
-            Template: data.type,
-            TemplateData: `{ "name": "${data.name}", "code": "${data.code}"}`,
+            Template: type,
+            TemplateData: `{"name": "${data.name}", "code": "${data.code}"}`,
         };
 
         // Create the promise and Amazon Simple Email Service (Amazon SES) service object.
-        const templatePromise = new AWS.SES({ apiVersion: "2010-12-01" })
-            .getTemplate({ TemplateName: data.type })
-            .promise();
+        const templatePromise = new AWS.SES({ apiVersion: "2010-12-01" }).getTemplate({ TemplateName: type }).promise();
 
         // Handle promise's fulfilled/rejected states
         templatePromise
-            .then((temp: any) => Logger.log(temp.Template.SubjectPart))
-            .catch((err: Error) => Logger.error(err, err.stack));
+            .then((temp: AWS.SES.GetTemplateResponse) => Logger.log(temp.Template?.SubjectPart))
+            .catch((err: AWS.AWSError) => Logger.error(err, err.stack));
 
         const sendPromise = new AWS.SES({ apiVersion: "2010-12-01" }).sendTemplatedEmail(params).promise();
         sendPromise
-            .then((temp: any) => {
-                Logger.log("email sent");
+            .then((temp: AWS.SES.SendTemplatedEmailResponse) => {
+                Logger.log("Email sent");
                 Logger.log(temp);
             })
-            .catch((err: Error) => Logger.error(err, err.stack));
+            .catch((err: AWS.AWSError) => Logger.error(err, err.stack));
     }
 
-    getHello(): string {
-        return "Notification service is working!";
+    healthCheck(): string {
+        return "Notification service is healthy";
     }
 }
