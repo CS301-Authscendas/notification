@@ -1,11 +1,17 @@
 import { Injectable, Logger } from "@nestjs/common";
 import { EmailTemplateType, Notification } from "./notification.entity";
-
-import AWS = require("aws-sdk");
-AWS.config.update({ region: "us-east-1" });
+import { AWSError, SES } from "aws-sdk";
 
 @Injectable()
 export class NotificationService {
+    private ses: SES;
+
+    constructor() {
+        this.ses = new SES({
+            region: process.env.AWS_SES_REGION || "",
+        });
+    }
+
     sendMessageEvent(data: Notification, type: EmailTemplateType) {
         Logger.log(data.email);
         Logger.log(data.name);
@@ -21,20 +27,20 @@ export class NotificationService {
         };
 
         // Create the promise and Amazon Simple Email Service (Amazon SES) service object.
-        const templatePromise = new AWS.SES({ apiVersion: "2010-12-01" }).getTemplate({ TemplateName: type }).promise();
+        const templatePromise = this.ses.getTemplate({ TemplateName: type }).promise();
 
         // Handle promise's fulfilled/rejected states
         templatePromise
-            .then((temp: AWS.SES.GetTemplateResponse) => Logger.log(temp.Template?.SubjectPart))
-            .catch((err: AWS.AWSError) => Logger.error(err, err.stack));
+            .then((temp: SES.GetTemplateResponse) => Logger.log(temp.Template?.SubjectPart))
+            .catch((err: AWSError) => Logger.error(err, err.stack));
 
-        const sendPromise = new AWS.SES({ apiVersion: "2010-12-01" }).sendTemplatedEmail(params).promise();
+        const sendPromise = this.ses.sendTemplatedEmail(params).promise();
         sendPromise
-            .then((temp: AWS.SES.SendTemplatedEmailResponse) => {
+            .then((temp: SES.SendTemplatedEmailResponse) => {
                 Logger.log("Email sent");
                 Logger.log(temp);
             })
-            .catch((err: AWS.AWSError) => Logger.error(err, err.stack));
+            .catch((err: AWSError) => Logger.error(err, err.stack));
     }
 
     getHello(): string {
