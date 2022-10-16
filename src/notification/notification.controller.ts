@@ -8,7 +8,7 @@ export class NotificationController {
     constructor(private readonly notificationService: NotificationService) {}
 
     @EventPattern("send_2FA_token_email")
-    sendTwoFaToken(data: Notification) {
+    async sendTwoFaToken(data: Notification) {
         return this.notificationService.sendMessageEvent(data, EmailTemplateType.TWO_FA);
     }
 
