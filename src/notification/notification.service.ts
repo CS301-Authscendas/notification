@@ -37,7 +37,7 @@ export class NotificationService {
             .catch((err: AWS.AWSError) => Logger.error(err, err.stack));
     }
 
-    healthCheck(): string {
-        return "Notification service is healthy";
+    getHello(): string {
+        return "Notification service is working!";
     }
 }

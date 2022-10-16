@@ -15,8 +15,8 @@ describe("NotificationController", () => {
     });
 
     describe("root", () => {
-        it('should return "Notification service is healthy"', () => {
-            expect(appController.healthCheck()).toBe("Notification service is healthy");
+        it('should return "Notification service is working!"', () => {
+            expect(appController.getHello()).toBe("Notification service is working!");
         });
     });
 });

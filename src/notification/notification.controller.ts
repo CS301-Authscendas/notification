@@ -13,7 +13,7 @@ export class NotificationController {
     }
 
     @Get()
-    healthCheck(): string {
-        return this.notificationService.healthCheck();
+    getHello(): string {
+        return this.notificationService.getHello();
     }
 }
