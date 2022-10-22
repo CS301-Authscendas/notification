@@ -1,4 +1,4 @@
-import { IsEmail, IsString } from "class-validator";
+import { IsEmail, IsString, IsOptional } from "class-validator";
 
 export enum EmailTemplateType {
     ACCOUNT_READY = "Account_ready_email_template",
@@ -14,6 +14,7 @@ export class Notification {
     @IsString()
     name: string;
 
+    @IsOptional()
     @IsString()
     code: string;
 }

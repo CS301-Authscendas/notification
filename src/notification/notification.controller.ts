@@ -12,6 +12,11 @@ export class NotificationController {
         return this.notificationService.sendMessageEvent(data, EmailTemplateType.TWO_FA);
     }
 
+    @EventPattern("send_seeded_email")
+    async sendSeededEmail(data: Notification) {
+        return this.notificationService.sendMessageEvent(data, EmailTemplateType.ACCOUNT_READY);
+    }
+
     @Get()
     getHello(): string {
         return this.notificationService.getHello();
