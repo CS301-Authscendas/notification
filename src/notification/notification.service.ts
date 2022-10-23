@@ -15,6 +15,7 @@ export class NotificationService {
     async sendMessageEvent(data: Notification, type: EmailTemplateType) {
         Logger.log(data.email);
         Logger.log(data.name);
+        Logger.log(data.id);
         Logger.log(data.code);
 
         const params = {
@@ -23,7 +24,7 @@ export class NotificationService {
             },
             Source: "Authcendas <authcendas@gmail.com>",
             Template: type,
-            TemplateData: `{"name": "${data.name}", "code": "${data.code}"}`,
+            TemplateData: `{"name": "${data.name}", "id": "${data.id}", "code": "${data.code}"}`,
         };
 
         try {

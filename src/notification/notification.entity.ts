@@ -17,5 +17,9 @@ export class Notification {
 
     @IsOptional()
     @IsString()
+    id: string;
+
+    @IsOptional()
+    @IsString()
     code: string;
 }
