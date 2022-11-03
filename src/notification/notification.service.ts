@@ -1,6 +1,6 @@
 import { Injectable, Logger } from "@nestjs/common";
-import { EmailTemplateType, Notification } from "./notification.entity";
 import { SES } from "aws-sdk";
+import { EmailTemplateType, Notification } from "./notification.entity";
 
 @Injectable()
 export class NotificationService {
@@ -9,6 +9,8 @@ export class NotificationService {
     constructor() {
         this.ses = new SES({
             region: process.env.AWS_SES_REGION || "",
+            accessKeyId: process.env.AWS_ACCESS_KEY_ID || "",
+            secretAccessKey: process.env.AWS_SECRET_ACCESS_KEY || "",
         });
     }
 
