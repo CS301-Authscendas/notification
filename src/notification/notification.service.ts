@@ -19,6 +19,7 @@ export class NotificationService {
         Logger.log(data.name);
         Logger.log(data.id);
         Logger.log(data.code);
+        Logger.log(data.organizationId);
 
         const params = {
             Destination: {
@@ -26,7 +27,7 @@ export class NotificationService {
             },
             Source: "Authcendas <authcendas@gmail.com>",
             Template: type,
-            TemplateData: `{"name": "${data.name}", "id": "${data.id}", "code": "${data.code}"}`,
+            TemplateData: `{"name": "${data.name}", "id": "${data.id}", "code": "${data.code}", "organizationId": "${data.organizationId}"}`,
         };
 
         try {

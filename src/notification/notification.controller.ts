@@ -12,6 +12,11 @@ export class NotificationController {
         return this.notificationService.sendMessageEvent(data, EmailTemplateType.ACCOUNT_READY);
     }
 
+    @EventPattern("send_seeded_sso")
+    async sendSeededSso(data: Notification) {
+        return this.notificationService.sendMessageEvent(data, EmailTemplateType.SSO_READY);
+    }
+
     @EventPattern("send_successful_registration_email")
     async sendRegisterEmail(data: Notification) {
         return this.notificationService.sendMessageEvent(data, EmailTemplateType.REGISTER);
