@@ -54,8 +54,8 @@ jobs:
         id: build-image
         env:
           ECR_REGISTRY: ${{ steps.login-ecr.outputs.registry }}
-          ECR_REPOSITORY: ${{ format('{0}-ecr-authentication', secrets.APP_NAME) }}
-          IMAGE_TAG: ${{ format('{0}-ecr-authentication', secrets.APP_NAME) }}
+          ECR_REPOSITORY: ${{ format('{0}-ecr-organizations', secrets.APP_NAME) }}
+          IMAGE_TAG: ${{ format('{0}-ecr-notifications', secrets.APP_NAME) }}
         run: |
           docker build -t $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG .
           docker push $ECR_REGISTRY/$ECR_REPOSITORY:$IMAGE_TAG
@@ -127,7 +127,7 @@ jobs:
         with:
           task-definition: task-definition.json
           container-name: ${{ format('{0}-notifications-1b', secrets.APP_NAME) }}
-          image: ${{ build.image }}
+          image: ${{ needs.build.image }}
 
       - name: Deploy Amazon ECS Task Definition for Availability Zone 1b
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
