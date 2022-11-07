@@ -89,7 +89,7 @@ jobs:
         with:
           task-definition: task-definition.json
           container-name: ${{ format('{0}-notifications-1a', secrets.APP_NAME) }}
-          image: ${{ jobs.build.image }}
+          image: ${{ needs.build.image }}
 
       - name: Deploy Amazon ECS Task Definition for Availability Zone 1a
         uses: aws-actions/amazon-ecs-deploy-task-definition@v1
